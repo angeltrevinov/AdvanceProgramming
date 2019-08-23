@@ -9,6 +9,7 @@
 
 void isPrime(int intNumber) {
 
+    //---------------------------------------------------------
     if( intNumber <= 1 ) {
         printf("is NOT prime");
         return;
