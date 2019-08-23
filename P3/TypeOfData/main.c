@@ -23,8 +23,22 @@ int main() {
     printf("Enter your double\n");
     scanf("%lf", &dDouble);
 
-    printf("Your integer %d storage size is %d bytes\n", intInteger, sizeof(intInteger));
-    printf("Your char %c your storage size is %d bytes. And I can read it as %c or as a %d \n", charCharacter, sizeof(charCharacter), charCharacter, charCharacter);
+    printf("Your integer %d storage size is %d bytes\n",
+            intInteger,
+            sizeof(intInteger)
+            );
+    printf("Your char %c your storage size is %d "
+           "bytes. And I can read it as %c or as a %d \n",
+           charCharacter,
+           sizeof(charCharacter),
+           charCharacter,
+           charCharacter
+           );
+    printf("your double %lf storage size is %d bytes, "
+           "I can read any number from",
+            dDouble,
+           sizeof(dDouble)
+           );
 
     return 0;
 }
