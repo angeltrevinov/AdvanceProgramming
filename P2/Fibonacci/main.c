@@ -8,10 +8,10 @@
 //  recursion, the user will tell how many numbers to pring
 //
 
-//-------------------------------------------------------------------------
+//----------------------------------------------------------
 void Fibonacci(
-        //Method that displays from the first to the Nth number of the
-        //      Fibonacci sequence
+        //Method that displays from the first to the Nth
+        //      number of the Fibonacci sequence
 
         //How many numbers the user wants to print
         int intHowMany
@@ -31,7 +31,9 @@ void Fibonacci(
 
        for(
                //prints the fibonacci from the first number
-               int intContador = 1; intContador < intHowMany; intContador++
+               int intContador = 1;
+               intContador < intHowMany;
+               intContador++
                ) {
            intSum = intPreOldSum + intPreSum;
            intPreOldSum = intPreSum;
@@ -41,7 +43,7 @@ void Fibonacci(
    }
 }
 
-//-------------------------------------------------------------------------
+//----------------------------------------------------------
 int main() {
 
     int intHowMany;
