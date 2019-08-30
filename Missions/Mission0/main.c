@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include<stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 /*
  * Author: Angel Treviño
@@ -21,49 +24,205 @@ struct Agent {
     char strMission[200]; //3 letter code and 9 digits
 };
 
+//==========================================================
+struct Node {
+    struct Agent agent;
+    struct Node* next;
+};
+
 //----------------------------------------------------------
-char verifyMission() {
+bool verifyMission(
+        //Method that verifies if the mission is written
+        //      correctly, with 3 letters and 9 digits
+        //Receives the string with the mission info
+        char *strMission
+        ) {
+
+    if( strlen(strMission) != 12) {
+        return false;
+    }
+
+    int intPos = 0;
+
+    for(; intPos < 3; intPos++) {
+        if(!(
+                (strMission[intPos] >= 'a' &&
+                 strMission[intPos] <= 'z') ||
+                (strMission[intPos] >= 'A' &&
+                 strMission[intPos] <= 'Z')
+        )){
+            return false;
+        }
+    }
+
+    for (; intPos < 12; intPos++) {
+        if(
+            //If its not a number, break
+                !(strMission[intPos] >= '0' &&
+                  strMission[intPos] <= '9')) {
+            return false;
+        }
+    }
+
+    return true;
 
 }
 
 //----------------------------------------------------------
-char verifyActives(char *strActive) {
-    return 't';
+bool verifyActives(
+        //Method that validates if the Active's input is
+        //      written correctly, with 4 letters and 9
+        //      digits
+        //Receives the string with the active info
+        char *strActive
+        ) {
+    if(
+            //If the length is not right
+            strlen(strActive) !=  13
+            ) {
+        return  false;
+    }
+
+    int intPos = 0;
+
+    for(
+            //check if the first four characters are letters
+            ; intPos < 4; intPos++
+            ) {
+        if(!(
+                (strActive[intPos] >= 'a' &&
+                 strActive[intPos] <= 'z') ||
+                (strActive[intPos] >= 'A' &&
+                 strActive[intPos] <= 'Z')
+                )) {
+            return false;
+        }
+    }
+
+    for(
+            //Check if the other characters are numbers
+            ; intPos < 13; intPos++) {
+
+        if(
+                //If its not a number, break
+                !(strActive[intPos] >= '0' &&
+                strActive[intPos] <= '9')) {
+            return false;
+        }
+    }
+
+    return true;
+
 }
 
 //----------------------------------------------------------
-void printAgents() {
+void pushAgent(
+        //Method that adds the agent to the linked list at
+        //      the beginning
+        struct Node** head,
+        struct Agent agentToAdd
+) {
+
+    struct Node* newAgent = (struct Node*)malloc(sizeof(struct Node));
+    newAgent -> agent = agentToAdd;
+    newAgent -> next = (*head);
+    (*head) = newAgent;
+}
+
+//----------------------------------------------------------
+void deleteAgent(
+        //Method that deletes an agent based on the mission
+        struct Node **head
+) {
+    char strMission[200];
+    do {
+        printf("Enter the agent's mission you want to delete\n");
+        scanf("%s", strMission);
+    }while (!verifyMission(strMission));
+    struct Node* agentToDelete = *head, * prev;
+
+    if(
+            //If the agent needs to be deleted
+            agentToDelete != NULL
+            && strcmp(agentToDelete -> agent.strMission, strMission) == 0
+            ) {
+
+        *head = agentToDelete -> next; // change the head
+        free(agentToDelete); //delete the node
+        return;
+    }
+
+    while(
+            agentToDelete != NULL &&
+            strcmp(agentToDelete -> agent.strMission, strMission) != 0
+            ) {
+        prev = agentToDelete;
+        agentToDelete = agentToDelete -> next;
+    }
+
+    if(agentToDelete == NULL) {
+        printf("The mission: %s couldn't be find\n", strMission);
+        return;
+    }
+
+    prev -> next = agentToDelete -> next;
+    free(agentToDelete);
+}
+
+//----------------------------------------------------------
+void printAgents(struct Node *node) {
+    struct Agent agent;
+    while(node != NULL) {
+        agent = node ->agent;
+        printf("Name: %s %s \n"
+               "Actives: %s \n"
+               "Age: %d \n"
+               "Mission: %s \n",
+               agent.strFirstName,
+               agent.strLastName,
+               agent.strActives,
+               agent.intAge,
+               agent.strMission);
+        printf("*********\n \n");
+        node = node -> next;
+    }
 
 }
 
 //----------------------------------------------------------
-struct Agent addAgent(
+struct Agent createAgent(
         //Method that receives the user input for the agent
         //      to be added and returns it as an agent
 ) {
     struct Agent agent;
-    char cValidator = 'f';
     printf("First name of your agent:\n");
     scanf("%s", agent.strFirstName);
     printf("Last name of your agen:\n");
     scanf("%s", agent.strLastName);
+
     do {
-        printf("Enter the agents active\n"
+        printf("Enter the agent's active\n"
                "**Remember you need 4 letters and 9 digits**\n");
         scanf("%s", agent.strActives);
-        cValidator = verifyActives(agent.strActives);
-    }while(cValidator == 'f');
-}
+    }while(!verifyActives(agent.strActives));
 
-//----------------------------------------------------------
-void deleteAgent() {
-}
+    printf("Enter the agent's age\n");
+    scanf("%d", &agent.intAge);
 
+    do {
+        printf("Enter the agent's mission\n"
+               "**Remember you need 3 letters and 9 digits\n");
+        scanf("%s", agent.strMission);
+    } while (!verifyMission(agent.strMission));
+
+    return agent;
+}
 
 //----------------------------------------------------------
 int main() {
 
     int intChoice;
+    struct Node* AgentsHead = NULL;
     do {
         printf("***************************************\n");
         printf("WELCOME TO THE MENU \n"
@@ -76,11 +235,13 @@ int main() {
         scanf("%d", &intChoice);
 
         if(intChoice == 1) {
-            addAgent();
+            struct Agent agent;
+            agent = createAgent();
+            pushAgent(&AgentsHead, agent);
         } else if(intChoice == 2) {
-            deleteAgent();
+            deleteAgent(&AgentsHead);
         } else if(intChoice == 3) {
-            printAgents();
+            printAgents(AgentsHead);
         }
 
     } while(intChoice != 4);
