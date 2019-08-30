@@ -139,7 +139,8 @@ void deleteAgent(
         printf("Enter the agent's mission you want to delete\n");
         scanf("%s", strMission);
     }while (!verifyMission(strMission));
-    struct Node* agentToDelete = *head, * prev;
+
+    struct Node* agentToDelete = *head, *prev;
 
     if(
             //If the agent needs to be deleted
@@ -230,7 +231,7 @@ int main() {
         printf("1. Add Agent\n");
         printf("2. Delete an Agent\n");
         printf("3. Print Agents\n");
-        printf("4. Exit Program\n");
+        printf("4. Exit Program **YOUR DATA WILL BE LOST**\n");
         printf("***************************************\n");
         scanf("%d", &intChoice);
 
