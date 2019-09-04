@@ -20,6 +20,7 @@ int main() {
 
     union UnknownData udData;
 
+    /* Integer */
     printf("Enter an integer\n");
     scanf("%d", &udData.intNumber);
 
@@ -28,6 +29,7 @@ int main() {
            sizeof(udData.intNumber)
     );
 
+    /* String */
     printf("Enter a string\n");
     scanf(" %s", udData.strChar);
 
@@ -37,6 +39,7 @@ int main() {
            sizeof(udData.strChar)
     );
 
+    /* Double */
     printf("Enter your double\n");
     scanf("%lf", &udData.dNumber);
 
@@ -48,6 +51,7 @@ int main() {
            DBL_MAX
     );
 
+    /* Union */
     printf("The size of the data is: %lu "
            "bytes\n", sizeof(udData));
 
