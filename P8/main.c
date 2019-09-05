@@ -44,7 +44,7 @@ int main() {
     scanf("%lf", &udData.dNumber);
 
     printf("your double %lf storage size is %ld bytes, "
-           "I can read any number from %lf to %lf",
+           "I can read any number from %lf to %lf \n",
            udData.dNumber,
            sizeof(udData.dNumber),
            DBL_MIN,
