@@ -22,9 +22,9 @@ struct Agent {
     //      length of a name
     char strFirstName[200];
     char strLastName[200];
-    char strActives[200]; //4 letters and 9 digits
+    char strActives[200][10]; //4 letters and 9 digits
     int intAge;
-    char strMission[200]; //3 letter code and 9 digits
+    char strMission[200][10]; //3 letter code and 9 digits
 };
 
 //==========================================================
@@ -135,20 +135,16 @@ void pushAgent(
 //----------------------------------------------------------
 void deleteAgent(
         //Method that deletes an agent based on the mission
-        struct Node **head
+        struct Node **head,
+        struct Agent agent
 ) {
-    char strMission[200];
-    do {
-        printf("Enter the agent's mission you want to delete\n");
-        scanf("%s", strMission);
-    }while (!verifyMission(strMission));
-
     struct Node* agentToDelete = *head, *prev;
 
     if(
         //If the agent needs to be deleted
             agentToDelete != NULL
-            && strcmp(agentToDelete -> agent.strMission, strMission) == 0
+            && strcmp(agentToDelete -> agent.strLastName, agent.strLastName) == 0
+            && strcmp(agentToDelete -> agent.strFirstName, agent.strFirstName) == 0
             ) {
 
         *head = agentToDelete -> next; // change the head
@@ -158,15 +154,11 @@ void deleteAgent(
 
     while(
             agentToDelete != NULL &&
-            strcmp(agentToDelete -> agent.strMission, strMission) != 0
+            strcmp(agentToDelete -> agent.strLastName, agent.strLastName) == 0
+            && strcmp(agentToDelete -> agent.strFirstName, agent.strFirstName) == 0
             ) {
         prev = agentToDelete;
         agentToDelete = agentToDelete -> next;
-    }
-
-    if(agentToDelete == NULL) {
-        printf("The mission: %s couldn't be find\n", strMission);
-        return;
     }
 
     prev -> next = agentToDelete -> next;
@@ -174,14 +166,31 @@ void deleteAgent(
 }
 
 //----------------------------------------------------------
+struct Agent encodeAgentsData(struct Agent agent) {
+
+    //We need a for for each type, gonna do mission and
+    //      actives later
+    for(int intCount = 0; intCount < strlen(agent.strFirstName); intCount++) {
+        agent.strFirstName[intCount] = agent.strFirstName[intCount] + 10;
+    }
+
+    for(int intCount = 0; intCount < strlen(agent.strLastName); intCount++) {
+        agent.strLastName[intCount] = agent.strLastName[intCount] + 10;
+    }
+
+    agent.intAge = agent.intAge * 37;
+
+    return agent;
+}
+
+//----------------------------------------------------------
 void printAgents(struct Node *node, char strPassword[200]) {
-    printf("%s \n", strPassword);
     struct Agent agent;
     while(node != NULL) {
         agent = node ->agent;
 
         if(strcmp(strPassword, "MISSION1")  != 0) {
-            
+            agent = encodeAgentsData(agent);
         }
 
         printf("Name: %s %s \n"
@@ -190,9 +199,9 @@ void printAgents(struct Node *node, char strPassword[200]) {
                "Mission: %s \n",
                agent.strFirstName,
                agent.strLastName,
-               agent.strActives,
+               agent.strActives[0],
                agent.intAge,
-               agent.strMission);
+               agent.strMission[0]);
         printf("*********\n \n");
         node = node -> next;
     }
@@ -213,8 +222,8 @@ struct Agent createAgent(
     do {
         printf("Enter the agent's active\n"
                "**Remember you need 4 letters and 9 digits**\n");
-        scanf("%s", agent.strActives);
-    }while(!verifyActives(agent.strActives));
+        scanf("%s", agent.strActives[0]);
+    }while(!verifyActives(agent.strActives[0]));
 
     printf("Enter the agent's age\n");
     scanf("%d", &agent.intAge);
@@ -222,17 +231,76 @@ struct Agent createAgent(
     do {
         printf("Enter the agent's mission\n"
                "**Remember you need 3 letters and 9 digits\n");
-        scanf("%s", agent.strMission);
-    } while (!verifyMission(agent.strMission));
+        scanf("%s", agent.strMission[0]);
+    } while (!verifyMission(agent.strMission[0]));
 
     return agent;
 }
 
 //----------------------------------------------------------
-void findAgent(struct Node* node) {
+void findAgent(struct Node **head) {
 
     char strAgentToFind[200];
-    printf("Enter your agent's last name or their active");
+    printf("Enter your agent's last name or their active\n");
+    scanf("%s", strAgentToFind);
+
+    struct Node* agentToFind = *head;
+    struct Agent agentFound;
+    bool found = false;
+
+    while(
+            agentToFind != NULL
+            && found == false
+            ) {
+
+        if(strcmp( agentToFind->agent.strLastName, strAgentToFind) == 0 ||
+           strcmp( agentToFind -> agent.strActives[0], strAgentToFind) == 0) {
+            found = true;
+        } else{
+            agentToFind = agentToFind ->next;
+        }
+    }
+
+    if(found == true) {
+
+        int intOption;
+
+        agentFound = agentToFind -> agent;
+        printf("** Your agent has been found **\n"
+               "do you want to: \n"
+               "1. Edit agent \n"
+               "2. Delete Agent\n");
+        scanf("%d", &intOption);
+
+        if(intOption == 1) {
+
+            printf("** Do you want to: **\n"
+                   "1. Add Mission\n"
+                   "2. Add Active");
+            scanf("%d", &intOption);
+
+            char strMissionOrActive [200];
+            if(intOption == 1){
+                
+                do{
+                    printf("Enter the agent's mission\n");
+                    scanf("%s", strMissionOrActive);
+                } while(!verifyMission(strMissionOrActive));
+
+            } else {
+                //add active,
+            }
+
+
+            printf("** Your agent has been updated **\n");
+        } else {
+           deleteAgent(head, agentFound);
+           printf("** Your Agent has been deleted **\n");
+        }
+
+    } else {
+        printf("*** ERROR YOUR AGENT COULD NOT BE FOUND ***\n");
+    }
 
 }
 
@@ -259,12 +327,12 @@ int main(
         printf("***************************************\n");
         scanf("%d", &intChoice);
 
-        if(intChoice == 1 && strcmp(password, "MISSION1")  == 0) {
+        if(intChoice == 1) {
             struct Agent agent;
             agent = createAgent();
             pushAgent(&AgentsHead, agent);
         } else if(intChoice == 2 && strcmp(password, "MISSION1")  == 0) {
-            findAgent(AgentsHead);
+            findAgent(&AgentsHead);
         } else if(intChoice == 3) {
             printAgents(AgentsHead, password);
         } else if ( strcmp(password, "MISSION1")  != 0) {
