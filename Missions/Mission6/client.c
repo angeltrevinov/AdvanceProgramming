@@ -26,16 +26,20 @@
  * */
 
 int PORT_NUMBER;
+char *Directory;
 
 //================== SERVER SETUP ==========================
+//==========================================================
+
+//----------------------------------------------------------
 void sendFile(char *nameOfFile) {
     int sfd =0, n=0, b;
     char rbuff[1024];
     char sendbuffer[100];
 
-    char *Path = "Test/";
-    char *Complete = malloc(strlen(Path) + strlen(nameOfFile) + 1);
-    strcpy(Complete, Path);
+    char *Complete = malloc(strlen(Directory) + strlen("/") + strlen(nameOfFile) + 1);
+    strcpy(Complete, Directory);
+    strcat(Complete, "/");
     strcat(Complete, nameOfFile);
     if(Complete[strlen(Complete) -1] == '~') {
         Complete[strlen(Complete) -1] = '\0';
@@ -164,6 +168,7 @@ void onFolderModified(char *strFolderName) {
         return;
     } else {
         printf("Starting to monitoring %s \n", strFolderName);
+        Directory = strFolderName;
     }
 
     while (1) {
