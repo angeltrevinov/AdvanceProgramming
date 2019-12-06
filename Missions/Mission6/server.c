@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
             perror("Accept");
             continue;
         }
+        mkdir("StoredServer", 0700);
         FILE* fp = fopen( "StoredServer/result.txt", "wb");
         tot=0;
         if(fp != NULL){
