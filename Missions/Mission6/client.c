@@ -33,6 +33,15 @@ void sendFile(char *nameOfFile) {
     char rbuff[1024];
     char sendbuffer[100];
 
+    char *Path = "Test/";
+    char *Complete = malloc(strlen(Path) + strlen(nameOfFile) + 1);
+    strcpy(Complete, Path);
+    strcat(Complete, nameOfFile);
+    if(Complete[strlen(Complete) -1] == '~') {
+        Complete[strlen(Complete) -1] = '\0';
+        printf("%s\n", Complete);
+    }
+
     struct sockaddr_in serv_addr;
 
     memset(rbuff, '0', sizeof(rbuff));
@@ -47,7 +56,7 @@ void sendFile(char *nameOfFile) {
         exit(1);
     }
 
-    FILE *fp = fopen("Test/test.txt", "rb");
+    FILE *fp = fopen(Complete, "rb");
     if(fp == NULL){
         perror("File");
         exit(1);
@@ -90,13 +99,13 @@ void changeDetection(int fd) {
                 (struct inotify_event * ) &buffer[i];
 
         if(event->len) {
-            sendFile(event->name);
             //On Create Event
             if ( event -> mask &  IN_CREATE) {
                 if( event -> mask & IN_ISDIR) {
                     printf("The folder %s was created\n", event->name);
                 } else {
                     printf("The file %s was modified\n", event->name);
+                    sendFile(event->name);
                 }
             }
             //On Modify Event
@@ -105,6 +114,8 @@ void changeDetection(int fd) {
                     printf("The folder %s was modified\n", event->name);
                 } else {
                     printf("The file %s was modified\n", event->name);
+                    sendFile(event->name);
+
                 }
             }
             //On Delete Event
@@ -113,6 +124,8 @@ void changeDetection(int fd) {
                     printf("The folder %s was deleted\n", event->name);
                 } else {
                     printf("The file %s was deleted\n", event->name);
+                    sendFile(event->name);
+
                 }
             }
             i+= EVENT_SIZE + event->len;
